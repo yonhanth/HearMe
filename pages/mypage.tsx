@@ -60,8 +60,8 @@ export default function MyPage() {
   const handleCopy = () => {
     // customName が設定されていれば URL に含める
     const shareUrl = nameSet
-      ? `https://hearme.vercel.app/u/${user.uid}_${customName}`
-      : `https://hearme.vercel.app/u/${user.uid}`;
+      ? `https://hear-7knx7bt2c-yonhanths-projects.vercel.app//u/${user.uid}_${customName}`
+      : `https://hear-7knx7bt2c-yonhanths-projects.vercel.app//u/${user.uid}`;
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -117,8 +117,8 @@ export default function MyPage() {
             <div className="bg-white text-black px-4 py-2 rounded-lg text-sm flex items-center justify-between">
               <span className="truncate">
                 {nameSet
-                  ? `https://hearme.vercel.app/u/${user.uid}_${customName}`
-                  : `https://hearme.vercel.app/u/${user.uid}`}
+                  ? `https://hear-7knx7bt2c-yonhanths-projects.vercel.app//u/${user.uid}_${customName}`
+                  : `https://hear-7knx7bt2c-yonhanths-projects.vercel.app//u/${user.uid}`}
               </span>
               <button
                 onClick={handleCopy}
