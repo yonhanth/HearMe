@@ -6,6 +6,8 @@ out
 .env.local
 .env*
 *.json
+!package.json
+
 
 # 依存ライブラリ（超巨大）
 node_modules
