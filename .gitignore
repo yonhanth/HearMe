@@ -5,8 +5,7 @@ out
 # Firebase秘密鍵とか環境変数
 .env.local
 .env*
-*.json
-!package.json
+
 
 
 # 依存ライブラリ（超巨大）
