@@ -1,8 +1,7 @@
-// pages/mypage.tsx
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useState, useEffect } from "react";
 import { auth, db } from "@/lib/firebase";
-import { getDoc, doc, deleteDoc } from "firebase/firestore";
+import { getDoc, doc, deleteDoc, setDoc } from "firebase/firestore";
 import { signOut } from "firebase/auth";
 
 export default function MyPage() {
@@ -16,12 +15,14 @@ export default function MyPage() {
   useEffect(() => {
     if (!user) return;
 
-    console.log("✅ ユーザーID:", user.uid); // ← ここ追加！
+    console.log("✅ ユーザーID:", user.uid);
 
     const checkLinks = async () => {
       try {
         const spotifyRef = doc(db, "users", user.uid, "spotifyTokens", "token");
         const appleRef = doc(db, "users", user.uid, "appleMusic", "token");
+        const userRef = doc(db, "users", user.uid);
+        const userDoc = await getDoc(userRef);
 
         const spotifyDoc = await getDoc(spotifyRef);
         const appleDoc = await getDoc(appleRef);
@@ -38,6 +39,15 @@ export default function MyPage() {
         }
 
         setAppleLinked(appleDoc.exists());
+
+        // すでにcustomNameが登録されていたら表示する
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          if (userData.customName) {
+            setCustomName(userData.customName);
+            setNameSet(true);
+          }
+        }
       } catch (error) {
         console.error("Firestoreデータ取得エラー:", error);
       }
@@ -45,6 +55,20 @@ export default function MyPage() {
 
     checkLinks();
   }, [user]);
+
+  const saveCustomName = async () => {
+    if (!user || !customName) return;
+    try {
+      await setDoc(
+        doc(db, "users", user.uid),
+        { customName },
+        { merge: true }
+      );
+      console.log("✅ customName 保存完了");
+    } catch (err) {
+      console.error("❌ customName 保存失敗:", err);
+    }
+  };
 
   if (loading) return <p className="text-center text-gray-400">読み込み中...</p>;
   if (error) return <p className="text-center text-red-500">エラー: {error.message}</p>;
@@ -62,7 +86,7 @@ export default function MyPage() {
 
   const handleCopy = () => {
     const shareUrl = nameSet
-      ? `https://www.hear-me.me/u/${user.uid}_${customName}`
+      ? `https://www.hear-me.me/u/${customName}`
       : `https://www.hear-me.me/u/${user.uid}`;
     navigator.clipboard.writeText(shareUrl);
     setCopied(true);
@@ -95,7 +119,10 @@ export default function MyPage() {
             className="p-2 rounded-md text-black"
           />
           <button
-            onClick={() => setNameSet(true)}
+            onClick={async () => {
+              await saveCustomName();
+              setNameSet(true);
+            }}
             className="ml-2 px-4 py-2 bg-green-600 rounded-md hover:bg-green-700"
           >
             決定
@@ -118,7 +145,7 @@ export default function MyPage() {
             <div className="bg-white text-black px-4 py-2 rounded-lg text-sm flex items-center justify-between">
               <span className="truncate">
                 {nameSet
-                  ? `https://www.hear-me.me/u/${user.uid}_${customName}`
+                  ? `https://www.hear-me.me/u/${customName}`
                   : `https://www.hear-me.me/u/${user.uid}`}
               </span>
               <button
