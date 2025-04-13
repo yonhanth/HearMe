@@ -10,12 +10,14 @@ export default function MyPage() {
   const [spotifyLinked, setSpotifyLinked] = useState(false);
   const [appleLinked, setAppleLinked] = useState(false);
   const [copied, setCopied] = useState(false);
-  // カスタムユーザー名を入力するための state
   const [customName, setCustomName] = useState("");
   const [nameSet, setNameSet] = useState(false);
 
   useEffect(() => {
     if (!user) return;
+
+    console.log("✅ ユーザーID:", user.uid); // ← ここ追加！
+
     const checkLinks = async () => {
       try {
         const spotifyRef = doc(db, "users", user.uid, "spotifyTokens", "token");
@@ -40,6 +42,7 @@ export default function MyPage() {
         console.error("Firestoreデータ取得エラー:", error);
       }
     };
+
     checkLinks();
   }, [user]);
 
@@ -58,7 +61,6 @@ export default function MyPage() {
   };
 
   const handleCopy = () => {
-    // customName が設定されていれば URL に含める
     const shareUrl = nameSet
       ? `https://www.hear-me.me/u/${user.uid}_${customName}`
       : `https://www.hear-me.me/u/${user.uid}`;
@@ -83,7 +85,6 @@ export default function MyPage() {
       </h1>
       <p className="mb-4 text-gray-400">{user.email}</p>
 
-      {/* ユーザーがカスタム名を入力できる欄（未設定の場合のみ表示） */}
       {!nameSet && (
         <div className="mb-6">
           <input
@@ -159,7 +160,6 @@ export default function MyPage() {
         )}
       </div>
 
-      {/* ログアウトボタン */}
       <div className="mt-6">
         <button
           onClick={handleLogout}
